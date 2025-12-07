@@ -3,25 +3,36 @@ import { randomUUID } from "node:crypto"
 export class DatabaseMemory {
     #videos = new Map()
 
-    // Set, Map
-    // universal unic ID
+    list(search) {
+        return Array.from(this.#videos.entries()).map((videoArray) => {
+            const id = videoArray[0]
+            const data = videoArray[1]
 
-    list() {
-        return this.#videos.values
+            return {
+                id,
+                ...data,
+            }
+        })
+        .filter(video => {
+            if(search) {
+                return video.title.includes(search)
+            }
+
+            return true
+        })
     }
 
     create(video) {
-        const videoId = randomUUID
-
-        this.#videos.set()
+        const videoId = randomUUID()
+        const newVideo = { id: videoId, ...video }
+        this.#videos.set(videoId, newVideo)
     }
 
     update(id, video) {
-        this.#videos.set(id, video)
+        this.#videos.set(id, { id, ...video })
     }
 
     delete(id) {
-
         this.#videos.delete(id)
     }
 }

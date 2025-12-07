@@ -5,35 +5,59 @@ const server = fastify()
 
 // GET, POST, PUT, DELETE...
 
-
 //post http://localhost:3333/videos
 
 const database = new DatabaseMemory()
 
-server.post('/videos', () => {
+//request body
+
+server.post('/videos', (request, reply) => {
+   const{title,description,duration} = request.body
+   
     database.create({
-        title:'video01',
-        description:'esse é o video 01',
-        duration:180,
+        title:title,
+        description: description,
+        duration:duration,
+    }) 
+
+
+    return reply.status(201).send()
+})
+
+server.get('/videos', (request) => {
+    const {search} = request.query
+
+    console.log(search)
+
+     const videos = database.list(search)
+
+    console.log(videos)
+
+    return videos
+})
+
+server.put('/videos/:id', (request, reply) => {
+    const videoID = request.params.id
+    const {title, description, duration} = request.body
+
+    const video = database.update(videoID,{
+        title,
+        description,
+        duration,
     })
 
-    console.log(database.list())
+    return reply.status(204).send()
 })
 
-server.get('/videos', () => {
-    return 'hello worldis'
-})
+server.delete('/videos/:id', (request, reply) => {
+    const videoId = request.params.id
 
-server.put('/videos/:id', () => {
-    return 'hello wor'
-})
+    database.delete(videoId)
 
-server.delete('/videos/:id', () => {
-    return 'hello wor'
+    return reply.status(204).send()
 })
 
 server.listen({
     port: 3333,
     host:'0.0.0.0'
 })
-
